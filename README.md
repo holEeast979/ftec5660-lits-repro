@@ -13,13 +13,21 @@ cp .env.example .env
 
 Edit `.env` and set `OPENAI_API_KEY` and `OPENAI_API_BASE`. Keep `.env` local; it is ignored by Git.
 
-## Run the baseline
+## Run the experiments
+
+Run the baseline (10 MCTS iterations):
 
 ```bash
-./run_experiment.sh
+./run_experiment.sh baseline
 ```
 
-This runs three fixed MATH500 examples for three trials with `n_iters=10`, `n_actions=3`, and `max_steps=10`.
+Run the modification (5 MCTS iterations):
+
+```bash
+./run_experiment.sh modified
+```
+
+Run both conditions: `./run_experiment.sh all`. Each condition uses the same three fixed examples and three trials. `results/summary.csv` contains the measured comparison.
 
 # LiTS — Language Inference via Tree Search
 

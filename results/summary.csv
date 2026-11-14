@@ -1,0 +1,7 @@
+condition,n_iters,trial,examples,correct,accuracy,runtime_seconds,input_tokens,output_tokens,total_tokens,api_calls
+baseline,10,1,3,3,1.0000,95,44748,1492,46240,129
+baseline,10,2,3,3,1.0000,100,47058,1705,48763,129
+baseline,10,3,3,3,1.0000,96,40206,2013,42219,120
+modified,5,1,3,3,1.0000,103,45878,1596,47474,129
+modified,5,2,3,3,1.0000,106,44628,1543,46171,129
+modified,5,3,3,3,1.0000,107,44918,1558,46476,129

@@ -1,0 +1,7 @@
+condition,trial,n_iters,runtime_seconds
+baseline,1,10,95
+baseline,2,10,100
+baseline,3,10,96
+modified,1,5,103
+modified,2,5,106
+modified,3,5,107
