@@ -1,3 +1,26 @@
+# FTEC5660 LiTS reproduction
+
+This coursework project partially reproduces LiTS ReST-MCTS on three fixed MATH500 examples using DeepSeek Flash. It is based on the [LiTS paper](https://arxiv.org/abs/2603.00631) and [official repository](https://github.com/xinzhel/lits-llm).
+
+## Install
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
+cp .env.example .env
+```
+
+Edit `.env` and set `OPENAI_API_KEY` and `OPENAI_API_BASE`. Keep `.env` local; it is ignored by Git.
+
+## Run the baseline
+
+```bash
+./run_experiment.sh
+```
+
+This runs three fixed MATH500 examples for three trials with `n_iters=10`, `n_actions=3`, and `max_steps=10`.
+
 # LiTS — Language Inference via Tree Search
 
 A modular Python framework for LLM reasoning and planning with tree search (e.g., MCTS, BFS and other custom search algorithms) and chain reasoning (e.g.,ReAct).
