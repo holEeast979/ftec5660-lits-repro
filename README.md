@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 4698)
-Total output lines: 544
-
 # FTEC5660 LiTS reproduction
 
 This coursework project partially reproduces LiTS ReST-MCTS on three fixed MATH500 examples using DeepSeek's OpenAI-compatible API. It is based on the [LiTS paper](https://arxiv.org/abs/2603.00631) and [official repository](https://github.com/xinzhel/lits-llm).
@@ -231,7 +228,72 @@ lits-search --include lits_benchmark.math_qa \
     --search-arg roll_out_steps=2 n_actions=3 max_steps=10
 ```
 
-### Environment-groun…698 tokens truncated…bbench --dataset dbbench --dataset-arg database=wikisql \
+### Environment-grounded task (BlocksWorld)
+
+```bash
+lits-search --include lits_benchmark.blocksworld \
+    --dataset blocksworld \
+    --transition blocksworld \
+    --search-arg max_steps=6 n_iters=50
+```
+
+### Tool-use task (MapEval-SQL)
+
+```bash
+lits-search --include lits_benchmark.mapeval \
+    --dataset mapeval-sql
+```
+
+No component flags needed — the framework auto-selects tool-use components.
+
+### Chain-in-Tree: collapse redundant branches with a BN evaluator
+
+When sampled candidate actions agree, tree search wastes LLM calls exploring
+identical children. The **Branching Necessity (BN) evaluator** gates a
+continuation phase: it chains forward greedily while the policy agrees, and only
+branches when genuine diversity appears. Selectable via `--search-arg bn_method`:
+
+```bash
+# Exact string self-consistency — no extra LLM calls (best for tool-use / env-grounded)
+lits-search --include lits_benchmark.math_qa --dataset math500 \
+    --search-arg add_continuation=true bn_method=sc_exact reward_gamma=0.5
+
+# LLM-based variants: sc (semantic self-consistency), entropy (clustering), direct (1–4 score)
+lits-search --include lits_benchmark.math_qa --dataset math500 \
+    --search-arg add_continuation=true bn_method=entropy n_actions_for_bne=3 reward_gamma=0.5
+```
+
+See the [BN Evaluator guide](docs/components/bn_evaluator/BN_EVALUATOR.md) for the
+four methods, task-type compatibility, and the `--bn-model` flag.
+
+### Cross-trajectory memory: learn from prior attempts
+
+LiTS agents can carry knowledge across trajectories of the same task — extracting
+atomic **facts** (environmental knowledge: schemas, API responses) or strategy-level
+**reflections** from completed trajectories and injecting them into the policy prompt
+on later attempts. Enabled with `--memory-arg`:
+
+```bash
+# Cross-trajectory fact memory (pass@5 ReAct) — facts extracted by Sonnet, shared across attempts
+lits-chain --include lits_benchmark.dbbench --dataset dbbench \
+    --cfg n_attempts=5 --cfg temperature=0.9 \
+    --memory-arg backend=local augmentors=fact skip_similarity_filtering=true batch=true \
+    --memory-arg model=bedrock/us.anthropic.claude-sonnet-4-6
+
+# Reflection memory (LATS-style) — reflect on failed trajectories, inject lessons
+lits-chain --include lits_benchmark.dbbench --dataset dbbench \
+    --cfg n_attempts=5 --cfg temperature=0.9 \
+    --memory-arg augmentors=reflection model=bedrock/us.anthropic.claude-sonnet-4-6
+```
+
+### Sibling-aware expansion: cross-branch diversity in one tree
+
+Within a single MCTS/BFS tree, **sibling-aware** expansion injects each sibling's
+prior actions into the next sibling's prompt, biasing candidates away from
+redundant (or give-up) actions — a cross-branch memory that costs no extra LLM calls:
+
+```bash
+lits-search --include lits_benchmark.dbbench --dataset dbbench --dataset-arg database=wikisql \
     --cfg search_algorithm=mcts_sibling_aware \
     --search-arg n_actions=3 n_iters=5
 ```
