@@ -20,7 +20,7 @@ OPENAI_API_KEY=your-DeepSeek-key
 OPENAI_API_BASE=https://api.deepseek.com
 ```
 
-Do not commit `.env`. The script uses the current DeepSeek model alias `deepseek-flash` through LiTS's OpenAI-compatible model wrapper.
+Do not commit `.env`. The script uses the DeepSeek API model alias `deepseek-flash` through LiTS's OpenAI-compatible wrapper. At the time of this run, the alias routed to DeepSeek-V4.1-Flash-1017; provider aliases can follow model updates. See the [official API changelog](https://api-docs.deepseek.com/updates/).
 
 ## Run
 
